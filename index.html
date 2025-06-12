@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px '.AppleSystemUIFontMonospaced'; color: #88b966}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px '.AppleSystemUIFontMonospaced'; color: #88b966; min-height: 16.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Fashion Classifier&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body { font-family: Arial, sans-serif; text-align: center; margin-top: 40px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>video { border: 1px solid #ccc; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#label-container div { margin-top: 5px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;h1&gt;Fashion Item Classifier&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;p&gt;Using your trained model hosted on GitHub&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button onclick="init()"&gt;Start Webcam&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button onclick="predict()"&gt;Predict&lt;/button&gt;&lt;br&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;video id="webcam" autoplay playsinline width="224" height="224"&gt;&lt;/video&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="label-container"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script type="text/javascript"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const URL = "https://kieron-branagan.github.io/teachable-model-fashion/";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let model, webcam, labelContainer, maxPredictions;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function init() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const modelURL = URL + "model.json";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const metadataURL = URL + "metadata.json";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Load the model and metadata</p>
+<p class="p1"><span class="Apple-converted-space">      </span>model = await tmImage.load(modelURL, metadataURL);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>maxPredictions = model.getTotalClasses();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Setup webcam</p>
+<p class="p1"><span class="Apple-converted-space">      </span>webcam = new tmImage.Webcam(224, 224, true); // width, height, flip</p>
+<p class="p1"><span class="Apple-converted-space">      </span>await webcam.setup();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>await webcam.play();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>window.requestAnimationFrame(loop);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById("webcam").replaceWith(webcam.canvas);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Setup prediction label container</p>
+<p class="p1"><span class="Apple-converted-space">      </span>labelContainer = document.getElementById("label-container");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>labelContainer.innerHTML = "";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>for (let i = 0; i &lt; maxPredictions; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>labelContainer.appendChild(document.createElement("div"));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function loop() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>webcam.update();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>window.requestAnimationFrame(loop);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function predict() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const prediction = await model.predict(webcam.canvas);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>for (let i = 0; i &lt; maxPredictions; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const classPrediction = `${prediction[i].className}: ${(prediction[i].probability * 100).toFixed(1)}%`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>labelContainer.childNodes[i].innerHTML = classPrediction;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
